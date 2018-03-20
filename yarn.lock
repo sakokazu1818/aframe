@@ -6835,7 +6835,7 @@ webvr-polyfill-dpdb@^1.0.7:
   version "1.0.7"
   resolved "https://registry.yarnpkg.com/webvr-polyfill-dpdb/-/webvr-polyfill-dpdb-1.0.7.tgz#e00c69ef0d90a0bdf7ae848fa4a928bde4359775"
 
-webvr-polyfill@^0.10.4:
+webvr-polyfill@0.10.4:
   version "0.10.4"
   resolved "https://registry.yarnpkg.com/webvr-polyfill/-/webvr-polyfill-0.10.4.tgz#e69243e27664f55e492e15468702140c34b32248"
   dependencies:
