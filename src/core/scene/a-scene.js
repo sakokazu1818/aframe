@@ -665,7 +665,7 @@ function getCanvasSize (canvasEl, embedded) {
   //   };
   // }
   return {
-    height: document.body.offsetHeight,
+    height: window.innerHeight,
     width: document.body.offsetWidth
   };
 }
