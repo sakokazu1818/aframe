@@ -658,6 +658,14 @@ module.exports.AScene = registerElement('a-scene', {
  * @param {boolean} embedded - Is the scene embedded?
  */
 function getCanvasSize (canvasEl, embedded) {
+  console.log({
+    offsetHeight: canvasEl.parentElement.offsetHeight,
+    offsetWidth: canvasEl.parentElement.offsetWidth,
+    windowInnerHeight: window.innerHeight,
+    windowInnerWidth: window.innerWidth,
+    documentOffsetHeight: document.body.offsetHeight,
+    documentOffsetWidth: document.body.offsetWidth
+  });
   // if (embedded) {
   //   return {
   //     height: canvasEl.parentElement.offsetHeight,
@@ -666,7 +674,7 @@ function getCanvasSize (canvasEl, embedded) {
   // }
   return {
     height: window.innerHeight,
-    width: document.body.offsetWidth
+    width: window.innerWidth
   };
 }
 

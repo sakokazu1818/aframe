@@ -73894,6 +73894,14 @@ module.exports.AScene = registerElement('a-scene', {
  * @param {boolean} embedded - Is the scene embedded?
  */
 function getCanvasSize (canvasEl, embedded) {
+  console.log({
+    offsetHeight: canvasEl.parentElement.offsetHeight,
+    offsetWidth: canvasEl.parentElement.offsetWidth,
+    windowInnerHeight: window.innerHeight,
+    windowInnerWidth: window.innerWidth,
+    documentOffsetHeight: document.body.offsetHeight,
+    documentOffsetWidth: document.body.offsetWidth
+  });
   // if (embedded) {
   //   return {
   //     height: canvasEl.parentElement.offsetHeight,
@@ -73902,7 +73910,7 @@ function getCanvasSize (canvasEl, embedded) {
   // }
   return {
     height: window.innerHeight,
-    width: document.body.offsetWidth
+    width: window.innerWidth
   };
 }
 
@@ -75676,7 +75684,7 @@ _dereq_('./core/a-mixin');
 _dereq_('./extras/components/');
 _dereq_('./extras/primitives/');
 
-console.log('A-Frame Version: 0.8.2 (Date 2018-10-03, Commit #9d724d01)');
+console.log('A-Frame Version: 0.8.2 (Date 2018-10-03, Commit #d7a24bdb)');
 console.log('three Version:', pkg.dependencies['three']);
 console.log('WebVR Polyfill Version:', pkg.dependencies['webvr-polyfill']);
 
