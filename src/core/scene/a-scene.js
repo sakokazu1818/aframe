@@ -477,6 +477,7 @@ module.exports.AScene = registerElement('a-scene', {
         size = getCanvasSize(canvas, embedded);
         camera.aspect = size.width / size.height;
         camera.updateProjectionMatrix();
+        this.renderer.setPixelRatio(window.devicePixelRatio);
         // Notify renderer of size change.
         this.renderer.setSize(size.width, size.height, false);
       },
