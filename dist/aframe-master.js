@@ -73901,8 +73901,8 @@ function getCanvasSize (canvasEl, embedded) {
     };
   }
   return {
-    height: window.innerHeight,
-    width: window.innerWidth
+    height: document.body.offsetHeight,
+    width: document.body.offsetWidth
   };
 }
 
@@ -75676,7 +75676,7 @@ _dereq_('./core/a-mixin');
 _dereq_('./extras/components/');
 _dereq_('./extras/primitives/');
 
-console.log('A-Frame Version: 0.8.2 (Date 2018-10-03, Commit #a4f0f2ec)');
+console.log('A-Frame Version: 0.8.2 (Date 2018-10-03, Commit #9176dfd6)');
 console.log('three Version:', pkg.dependencies['three']);
 console.log('WebVR Polyfill Version:', pkg.dependencies['webvr-polyfill']);
 
