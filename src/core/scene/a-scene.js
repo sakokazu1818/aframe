@@ -673,7 +673,7 @@ function getCanvasSize (canvasEl, embedded) {
     };
   }
   return {
-    height: canvasEl.parentElement.offsetHeight,
+    height: window.innerHeight,
     width: window.innerWidth
   };
 }
