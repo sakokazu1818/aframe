@@ -666,14 +666,14 @@ function getCanvasSize (canvasEl, embedded) {
     documentOffsetHeight: document.body.offsetHeight,
     documentOffsetWidth: document.body.offsetWidth
   });
-  // if (embedded) {
-  //   return {
-  //     height: canvasEl.parentElement.offsetHeight,
-  //     width: canvasEl.parentElement.offsetWidth
-  //   };
-  // }
+  if (embedded) {
+    return {
+      height: canvasEl.parentElement.offsetHeight,
+      width: canvasEl.parentElement.offsetWidth
+    };
+  }
   return {
-    height: window.innerHeight,
+    height: canvasEl.parentElement.offsetHeight,
     width: window.innerWidth
   };
 }
