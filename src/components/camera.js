@@ -42,7 +42,7 @@ module.exports.Component = registerComponent('camera', {
     var embeddedAR = this.canvas.parentElement.offsetWidth / this.canvas.parentElement.offsetHeight;
 
     // Update properties.
-    camera.aspect = data.aspect || (this.embedded ? embeddedAR : (window.innerWidth / window.innerHeight));
+    camera.aspect = this.embedded ? embeddedAR : (window.innerWidth / window.innerHeight);
     console.log('camera.aspect', camera.aspect);
     camera.far = data.far;
     camera.fov = data.fov;

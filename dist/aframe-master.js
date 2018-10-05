@@ -63379,7 +63379,7 @@ module.exports.Component = registerComponent('camera', {
     var embeddedAR = this.canvas.parentElement.offsetWidth / this.canvas.parentElement.offsetHeight;
 
     // Update properties.
-    camera.aspect = data.aspect || (this.embedded ? embeddedAR : (window.innerWidth / window.innerHeight));
+    camera.aspect = this.embedded ? embeddedAR : (window.innerWidth / window.innerHeight);
     console.log('camera.aspect', camera.aspect);
     camera.far = data.far;
     camera.fov = data.fov;
@@ -75698,7 +75698,7 @@ _dereq_('./core/a-mixin');
 _dereq_('./extras/components/');
 _dereq_('./extras/primitives/');
 
-console.log('A-Frame Version: 0.8.2 (Date 2018-10-05, Commit #3f7254a1)');
+console.log('A-Frame Version: 0.8.2 (Date 2018-10-05, Commit #7e0e0eac)');
 console.log('three Version:', pkg.dependencies['three']);
 console.log('WebVR Polyfill Version:', pkg.dependencies['webvr-polyfill']);
 
