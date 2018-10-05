@@ -63359,10 +63359,15 @@ module.exports.Component = registerComponent('camera', {
   init: function () {
     var camera;
     var el = this.el;
+    var sceneEl = el.sceneEl;
+    this.canvas = sceneEl.canvas;
+    this.embedded = sceneEl.getAttribute('embedded') && !sceneEl.is('vr-mode');
 
     // Create camera.
     camera = this.camera = new THREE.PerspectiveCamera();
     el.setObject3D('camera', camera);
+
+    console.log('camera ocmponent, object', this);
   },
 
   /**
@@ -63371,9 +63376,10 @@ module.exports.Component = registerComponent('camera', {
   update: function (oldData) {
     var data = this.data;
     var camera = this.camera;
+    var embeddedAR = this.canvas.parentElement.offsetWidth / this.canvas.parentElement.offsetHeight;
 
     // Update properties.
-    camera.aspect = data.aspect || (window.innerWidth / window.innerHeight);
+    camera.aspect = data.aspect || (this.embedded ? embeddedAR : (window.innerWidth / window.innerHeight));
     camera.far = data.far;
     camera.fov = data.fov;
     camera.near = data.near;
@@ -75684,7 +75690,7 @@ _dereq_('./core/a-mixin');
 _dereq_('./extras/components/');
 _dereq_('./extras/primitives/');
 
-console.log('A-Frame Version: 0.8.2 (Date 2018-10-04, Commit #993c5052)');
+console.log('A-Frame Version: 0.8.2 (Date 2018-10-05, Commit #5b31b3ef)');
 console.log('three Version:', pkg.dependencies['three']);
 console.log('WebVR Polyfill Version:', pkg.dependencies['webvr-polyfill']);
 
