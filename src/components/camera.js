@@ -49,6 +49,8 @@ module.exports.Component = registerComponent('camera', {
     camera.near = data.near;
     camera.zoom = data.zoom;
     console.log({
+      embeddedAR: embeddedAR,
+      embedded: this.embedded,
       camera: camera,
       offsetWidth: this.canvas.parentElement.offsetWidth,
       offsetHeight: this.canvas.parentElement.offsetHeight,
