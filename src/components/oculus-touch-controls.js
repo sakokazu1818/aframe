@@ -1,6 +1,7 @@
 var bind = require('../utils/bind');
 var registerComponent = require('../core/component').registerComponent;
 var trackedControlsUtils = require('../utils/tracked-controls');
+var THREE = require('../lib/three');
 var onButtonEvent = trackedControlsUtils.onButtonEvent;
 
 var TOUCH_CONTROLLER_MODEL_BASE_URL = 'https://cdn.aframe.io/controllers/oculus/oculus-touch-controller-';
@@ -11,7 +12,11 @@ var TOUCH_CONTROLLER_MODEL_OBJ_MTL_R = TOUCH_CONTROLLER_MODEL_BASE_URL + 'right.
 
 var GAMEPAD_ID_PREFIX = 'Oculus Touch';
 
-var PIVOT_OFFSET = {x: 0, y: -0.015, z: 0.04};
+var DEFAULT_MODEL_PIVOT_OFFSET = new THREE.Vector3(0, 0, -0.053);
+var RAY_ORIGIN = {
+  left: {origin: {x: 0.008, y: -0.008, z: 0}, direction: {x: 0, y: -0.8, z: -1}},
+  right: {origin: {x: -0.008, y: -0.008, z: 0}, direction: {x: 0, y: -0.8, z: -1}}
+};
 
 /**
  * Oculus Touch controls.
@@ -26,7 +31,7 @@ module.exports.Component = registerComponent('oculus-touch-controls', {
     buttonTouchColor: {type: 'color', default: '#8AB'},
     buttonHighlightColor: {type: 'color', default: '#2DF'},  // Light blue.
     model: {default: true},
-    rotationOffset: {default: 0}
+    orientationOffset: {type: 'vec3', default: {x: 43, y: 0, z: 0}}
   },
 
   /**
@@ -128,11 +133,10 @@ module.exports.Component = registerComponent('oculus-touch-controls', {
 
   injectTrackedControls: function () {
     var data = this.data;
-    var offset = data.hand === 'right' ? -90 : 90;
     this.el.setAttribute('tracked-controls', {
       id: data.hand === 'right' ? 'Oculus Touch (Right)' : 'Oculus Touch (Left)',
       controller: 0,
-      rotationOffset: data.rotationOffset !== -999 ? data.rotationOffset : offset
+      orientationOffset: data.orientationOffset
     });
     this.updateControllerModel();
   },
@@ -190,7 +194,13 @@ module.exports.Component = registerComponent('oculus-touch-controls', {
     buttonMeshes.bbutton = controllerObject3D.getObjectByName('buttonB_oculus-touch-controller-right.003');
 
     // Offset pivot point
-    controllerObject3D.position = PIVOT_OFFSET;
+    controllerObject3D.position.copy(DEFAULT_MODEL_PIVOT_OFFSET);
+
+    this.el.emit('controllermodelready', {
+      name: 'oculus-touch-controls',
+      model: this.data.model,
+      rayOrigin: RAY_ORIGIN[this.data.hand]
+    });
   },
 
   onAxisMoved: function (evt) {

@@ -11,12 +11,23 @@ The camera component defines from which perspective the user views the scene.
 The camera is commonly paired with controls components that allow input devices
 to move and rotate the camera.
 
-## Example
+## Examples
 
-A camera situated at the average height of human eye level (1.6 meters).
+A camera should usually be positioned at the average height of human eye level (1.6 meters). When used with controls that receive rotation or position (e.g. from a VR device) this position will be overridden.
 
 ```html
-  <a-entity position="0 1.6 0" camera look-controls></a-entity>
+<a-entity camera look-controls position="0 1.6 0"></a-entity>
+```
+
+When moving or rotating the camera relative to the scene, use a camera rig.
+By doing so, the camera's height offset can be updated by roomscale devices,
+while still allowing the tracked area to be moved independently around the
+scene.
+
+```html
+<a-entity id="#rig" position="25 10 0">
+  <a-entity id="camera" camera look-controls></a-entity>
+</a-entity>
 ```
 
 ## Properties
@@ -27,8 +38,7 @@ A camera situated at the average height of human eye level (1.6 meters).
 | far        | Camera frustum far clipping plane.                                                                                                                                                                                                                                                  | 10000         |
 | fov        | Field of view (in degrees).                                                                                                                                                                                                                                                         | 80            |
 | near       | Camera frustum near clipping plane.                                                                                                                                                                                                                                                 | 0.005         |
-| spectator   | Whether the camera is used to render a third-person view of the scene on the 2D display while in VR mode.
-                                                                                                                                                                                                                | false            |
+| spectator  | Whether the camera is used to render a third-person view of the scene on the 2D display while in VR mode.                                                                                                                                                                                       | false         |
 | zoom       | Zoom factor of the camera.                                                                                                                                                                                                                                                          | 1             |
 
 ## Default Camera
@@ -36,7 +46,7 @@ A camera situated at the average height of human eye level (1.6 meters).
 If a camera is not specified, A-Frame will inject a default camera:
 
 ```html
-<a-entity camera="active: true" look-controls wasd-controls position="0 0 0" data-aframe-default-camera></a-entity>
+<a-entity camera="active: true" look-controls wasd-controls position="0 1.6 0" data-aframe-default-camera></a-entity>
 ```
 
 If a camera is specified (e.g., our own `<a-camera>` or `<a-entity camera>`),

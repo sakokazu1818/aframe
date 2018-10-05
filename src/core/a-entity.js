@@ -9,6 +9,7 @@ var debug = utils.debug('core:a-entity:debug');
 var warn = utils.debug('core:a-entity:warn');
 
 var MULTIPLE_COMPONENT_DELIMITER = '__';
+var OBJECT3D_COMPONENTS = ['position', 'rotation', 'scale', 'visible'];
 
 /**
  * Entity is a container object that components are plugged into to comprise everything in
@@ -22,15 +23,6 @@ var MULTIPLE_COMPONENT_DELIMITER = '__';
  * @member {boolean} isPlaying - false if dynamic behavior of the entity is paused.
  */
 var proto = Object.create(ANode.prototype, {
-  defaultComponents: {
-    value: {
-      position: '',
-      rotation: '',
-      scale: '',
-      visible: ''
-    }
-  },
-
   createdCallback: {
     value: function () {
       this.components = {};
@@ -393,11 +385,6 @@ var proto = Object.create(ANode.prototype, {
   removeComponent: {
     value: function (name) {
       var component;
-      var isDefault;
-
-      // Don't remove default or mixed-in components.
-      isDefault = name in this.defaultComponents;
-      if (isDefault) { return; }
 
       component = this.components[name];
       if (!component) { return; }
@@ -456,15 +443,15 @@ var proto = Object.create(ANode.prototype, {
       // Gather entity-defined components.
       for (i = 0; i < this.attributes.length; ++i) {
         name = this.attributes[i].name;
+        if (OBJECT3D_COMPONENTS.indexOf(name) !== -1) { continue; }
         if (isComponent(name)) { componentsToUpdate[name] = true; }
       }
 
-      // Initialze or update default components first.
-      for (name in this.defaultComponents) {
-        data = mergeComponentData(this.getDOMAttribute(name),
-                                  extraComponents && extraComponents[name]);
-        this.updateComponent(name, data);
-        delete componentsToUpdate[name];
+      // object3D components first (position, rotation, scale, visible).
+      for (i = 0; i < OBJECT3D_COMPONENTS.length; i++) {
+        name = OBJECT3D_COMPONENTS[i];
+        if (!this.hasAttribute(name)) { continue; }
+        this.updateComponent(name, this.getDOMAttribute(name));
       }
 
       // Initialize or update rest of components.
@@ -490,10 +477,9 @@ var proto = Object.create(ANode.prototype, {
   updateComponent: {
     value: function (attr, attrValue, clobber) {
       var component = this.components[attr];
-      var isDefault = attr in this.defaultComponents;
       if (component) {
         // Remove component.
-        if (attrValue === null && !isDefault) {
+        if (attrValue === null && !checkComponentDefined(this, attr)) {
           this.removeComponent(attr);
           return;
         }
@@ -522,8 +508,6 @@ var proto = Object.create(ANode.prototype, {
       // Remove component.
       if (component && propertyName === undefined) {
         this.removeComponent(attr);
-        // Do not remove the component from the DOM if default component.
-        if (this.components[attr]) { return; }
       }
 
       // Reset component property value.
@@ -693,7 +677,6 @@ var proto = Object.create(ANode.prototype, {
   flushToDOM: {
     value: function (recursive) {
       var components = this.components;
-      var defaultComponents = this.defaultComponents;
       var child;
       var children = this.children;
       var i;
@@ -701,7 +684,7 @@ var proto = Object.create(ANode.prototype, {
 
       // Flush entity's components to DOM.
       for (key in components) {
-        components[key].flushToDOM(key in defaultComponents);
+        components[key].flushToDOM();
       }
 
       // Recurse.
@@ -736,20 +719,6 @@ var proto = Object.create(ANode.prototype, {
       return window.HTMLElement.prototype.getAttribute.call(this, attr);
     },
     writable: window.debug
-  },
-
-  /**
-   * `getAttribute` used to be `getDOMAttribute` and `getComputedAttribute` used to be
-   * what `getAttribute` is now. Now legacy code.
-   *
-   * @param {string} attr
-   * @returns {object|string} Object if component, else string.
-   */
-  getComputedAttribute: {
-    value: function (attr) {
-      warn('`getComputedAttribute` is deprecated. Use `getAttribute` instead.');
-      return this.getAttribute(attr);
-    }
   },
 
   /**
@@ -809,9 +778,6 @@ var proto = Object.create(ANode.prototype, {
  * @returns {boolean}
  */
 function checkComponentDefined (el, name) {
-  // Check if default components contain the component.
-  if (el.defaultComponents[name] !== undefined) { return true; }
-
   // Check if element contains the component.
   if (el.components[name] && el.components[name].attrValue) { return true; }
 

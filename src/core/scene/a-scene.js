@@ -35,25 +35,21 @@ var warn = utils.debug('core:a-scene:warn');
  */
 module.exports.AScene = registerElement('a-scene', {
   prototype: Object.create(AEntity.prototype, {
-    defaultComponents: {
-      value: {
-        'inspector': '',
-        'keyboard-shortcuts': '',
-        'screenshot': '',
-        'vr-mode-ui': ''
-      }
-    },
-
     createdCallback: {
       value: function () {
         this.isIOS = isIOS;
         this.isMobile = isMobile;
         this.isScene = true;
         this.object3D = new THREE.Scene();
+        var self = this;
+        this.object3D.onAfterRender = function (renderer, scene, camera) {
+          // THREE may swap the camera used for the rendering if in VR, so we pass it to tock
+          if (self.isPlaying) { self.tock(self.time, self.delta, camera); }
+        };
         this.render = bind(this.render, this);
         this.systems = {};
         this.systemNames = [];
-        this.time = 0;
+        this.time = this.delta = 0;
         this.init();
       }
     },
@@ -70,6 +66,12 @@ module.exports.AScene = registerElement('a-scene', {
         this.resize();
         this.addFullScreenStyles();
         initPostMessageAPI(this);
+
+        // Default components.
+        this.setAttribute('inspector', '');
+        this.setAttribute('keyboard-shortcuts', '');
+        this.setAttribute('screenshot', '');
+        this.setAttribute('vr-mode-ui', '');
       },
       writable: true
     },
@@ -251,7 +253,6 @@ module.exports.AScene = registerElement('a-scene', {
           vrDisplay = utils.device.getVRDisplay();
           vrManager.setDevice(vrDisplay);
           vrManager.enabled = true;
-          vrManager.setPoseTarget(this.camera.el.object3D);
           return vrDisplay.requestPresent([{source: this.canvas}])
                           .then(enterVRSuccess, enterVRFailure);
         }
@@ -476,6 +477,7 @@ module.exports.AScene = registerElement('a-scene', {
         size = getCanvasSize(canvas, embedded);
         camera.aspect = size.width / size.height;
         camera.updateProjectionMatrix();
+        this.renderer.setPixelRatio(window.devicePixelRatio);
         // Notify renderer of size change.
         this.renderer.setSize(size.width, size.height, false);
       },
@@ -484,14 +486,33 @@ module.exports.AScene = registerElement('a-scene', {
 
     setupRenderer: {
       value: function () {
+        var self = this;
         var renderer;
-        renderer = this.renderer = new THREE.WebGLRenderer({
+        var rendererAttr;
+        var rendererAttrString;
+        var rendererConfig = {
           canvas: this.canvas,
-          antialias: shouldAntiAlias(this),
+          antialias: !isMobile,
           alpha: true
-        });
+        };
+        if (this.hasAttribute('antialias')) {
+          rendererConfig.antialias = this.getAttribute('antialias') === 'true';
+        }
+        if (this.hasAttribute('renderer')) {
+          rendererAttrString = this.getAttribute('renderer');
+          rendererAttr = utils.styleParser.parse(rendererAttrString);
+          if (rendererAttr.antialias && rendererAttr.antialias !== 'auto') {
+            rendererConfig.antialias = rendererAttr.antialias === 'true';
+          }
+        }
+        renderer = this.renderer = new THREE.WebGLRenderer(rendererConfig);
         renderer.setPixelRatio(window.devicePixelRatio);
         renderer.sortObjects = false;
+        // We expect camera-set-active to be triggered at least once in the life of an a-frame app. Usually soon after
+        // it is initialized.
+        this.addEventListener('camera-set-active', function () {
+          renderer.vr.setPoseTarget(self.camera.el.object3D);
+        });
       },
       writable: window.debug
     },
@@ -587,20 +608,20 @@ module.exports.AScene = registerElement('a-scene', {
      * needing to render.
      */
     tock: {
-      value: function (time, timeDelta) {
+      value: function (time, timeDelta, camera) {
         var i;
         var systems = this.systems;
 
         // Components.
         for (i = 0; i < this.behaviors.tock.length; i++) {
           if (!this.behaviors.tock[i].el.isPlaying) { continue; }
-          this.behaviors.tock[i].tock(time, timeDelta);
+          this.behaviors.tock[i].tock(time, timeDelta, camera);
         }
 
         // Systems.
         for (i = 0; i < this.systemNames.length; i++) {
           if (!systems[this.systemNames[i]].tock) { continue; }
-          systems[this.systemNames[i]].tock(time, timeDelta);
+          systems[this.systemNames[i]].tock(time, timeDelta, camera);
         }
       }
     },
@@ -614,16 +635,14 @@ module.exports.AScene = registerElement('a-scene', {
      */
     render: {
       value: function () {
-        var delta = this.clock.getDelta() * 1000;
+        this.delta = this.clock.getDelta() * 1000;
         var renderer = this.renderer;
         this.time = this.clock.elapsedTime * 1000;
 
-        if (this.isPlaying) { this.tick(this.time, delta); }
+        if (this.isPlaying) { this.tick(this.time, this.delta); }
 
         renderer.animate(this.render);
         renderer.render(this.object3D, this.camera, this.renderTarget);
-
-        if (this.isPlaying) { this.tock(this.time, delta); }
       },
       writable: true
     }
@@ -669,23 +688,6 @@ function exitFullscreen () {
     document.webkitExitFullscreen();
   }
 }
-
-/**
- * Determines if renderer anti-aliasing should be enabled.
- * Enabled by default if has native WebVR or is desktop.
- *
- * @returns {bool}
- */
-function shouldAntiAlias (sceneEl) {
-  // Explicitly set.
-  if (sceneEl.getAttribute('antialias') !== null) {
-    return sceneEl.getAttribute('antialias') === 'true';
-  }
-
-  // Default not AA for mobile.
-  return !sceneEl.isMobile;
-}
-module.exports.shouldAntiAlias = shouldAntiAlias;  // For testing.
 
 function setupCanvas (sceneEl) {
   var canvasEl;

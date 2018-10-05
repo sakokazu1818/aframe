@@ -1,16 +1,13 @@
 // Check before the polyfill runs.
 window.hasNativeWebVRImplementation = !!window.navigator.getVRDisplays || !!window.navigator.getVRDevices;
 
-window.WebVRConfig = window.WebVRConfig || {
+// WebVR polyfill
+var WebVRPolyfill = require('webvr-polyfill');
+window.webvrpolyfill = new WebVRPolyfill({
   BUFFER_SCALE: 1,
   CARDBOARD_UI_DISABLED: true,
-  ROTATE_INSTRUCTIONS_DISABLED: true,
-  TOUCH_PANNER_DISABLED: true,
-  MOUSE_KEYBOARD_CONTROLS_DISABLED: true
-};
-
-// WebVR polyfill
-require('webvr-polyfill');
+  ROTATE_INSTRUCTIONS_DISABLED: true
+});
 
 var utils = require('./utils/');
 
@@ -83,7 +80,7 @@ require('./core/a-mixin');
 require('./extras/components/');
 require('./extras/primitives/');
 
-console.log('A-Frame Version: 0.8.0 (Date 2018-03-11, Commit #7e4b844)');
+console.log('A-Frame Version: 0.8.2 (Date 2018-10-05, Commit #89db6d1a)');
 console.log('three Version:', pkg.dependencies['three']);
 console.log('WebVR Polyfill Version:', pkg.dependencies['webvr-polyfill']);
 

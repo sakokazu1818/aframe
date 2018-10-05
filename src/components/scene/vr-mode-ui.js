@@ -85,7 +85,7 @@ module.exports.Component = registerComponent('vr-mode-ui', {
 
   remove: function () {
     [this.enterVREl, this.orientationModalEl].forEach(function (uiElement) {
-      if (uiElement) {
+      if (uiElement && uiElement.parentNode) {
         uiElement.parentNode.removeChild(uiElement);
       }
     });
@@ -144,6 +144,7 @@ function createEnterVRButton (onClick) {
   wrapper.appendChild(vrButton);
   vrButton.addEventListener('click', function (evt) {
     onClick();
+    evt.stopPropagation();
   });
   return wrapper;
 }

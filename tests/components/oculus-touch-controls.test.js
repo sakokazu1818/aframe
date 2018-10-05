@@ -1,4 +1,4 @@
-/* global assert, process, setup, suite, test */
+/* global assert, process, setup, sinon, suite, test */
 var entityFactory = require('../helpers').entityFactory;
 
 suite('oculus-touch-controls', function () {
@@ -19,41 +19,41 @@ suite('oculus-touch-controls', function () {
 
   suite('checkIfControllerPresent', function () {
     test('removes event listeners if controllers not present', function () {
-      var addEventListenersSpy = this.sinon.spy(component, 'addEventListeners');
-      var injectTrackedControlsSpy = this.sinon.spy(component, 'injectTrackedControls');
-      var removeEventListenersSpy = this.sinon.spy(component, 'removeEventListeners');
+      var addEventListenersSpy = sinon.spy(component, 'addEventListeners');
+      var injectTrackedControlsSpy = sinon.spy(component, 'injectTrackedControls');
+      var removeEventListenersSpy = sinon.spy(component, 'removeEventListeners');
 
       // Mock has not been checked previously.
       delete component.controllerPresent;
 
       component.checkIfControllerPresent();
 
-      assert.notOk(injectTrackedControlsSpy.called);
-      assert.notOk(addEventListenersSpy.called);
-      assert.ok(removeEventListenersSpy.called);
+      sinon.assert.notCalled(injectTrackedControlsSpy);
+      sinon.assert.notCalled(addEventListenersSpy);
+      sinon.assert.calledOnce(removeEventListenersSpy);
       assert.strictEqual(component.controllerPresent, false);
     });
 
     test('does not call removeEventListeners multiple times', function () {
-      var addEventListenersSpy = this.sinon.spy(component, 'addEventListeners');
-      var injectTrackedControlsSpy = this.sinon.spy(component, 'injectTrackedControls');
-      var removeEventListenersSpy = this.sinon.spy(component, 'removeEventListeners');
+      var addEventListenersSpy = sinon.spy(component, 'addEventListeners');
+      var injectTrackedControlsSpy = sinon.spy(component, 'injectTrackedControls');
+      var removeEventListenersSpy = sinon.spy(component, 'removeEventListeners');
 
       // Mock that it's been checked previously.
       component.controllerPresent = false;
 
       component.checkIfControllerPresent();
 
-      assert.notOk(injectTrackedControlsSpy.called);
-      assert.notOk(addEventListenersSpy.called);
-      assert.notOk(removeEventListenersSpy.called);
+      sinon.assert.notCalled(injectTrackedControlsSpy);
+      sinon.assert.notCalled(addEventListenersSpy);
+      sinon.assert.notCalled(removeEventListenersSpy);
       assert.strictEqual(component.controllerPresent, false);
     });
 
     test('attach events if controller is newly present', function () {
-      var addEventListenersSpy = this.sinon.spy(component, 'addEventListeners');
-      var injectTrackedControlsSpy = this.sinon.spy(component, 'injectTrackedControls');
-      var removeEventListenersSpy = this.sinon.spy(component, 'removeEventListeners');
+      var addEventListenersSpy = sinon.spy(component, 'addEventListeners');
+      var injectTrackedControlsSpy = sinon.spy(component, 'injectTrackedControls');
+      var removeEventListenersSpy = sinon.spy(component, 'removeEventListeners');
 
       // Mock isControllerPresent to return true.
       el.sceneEl.systems['tracked-controls'].controllers = component.controllersWhenPresent;
@@ -63,16 +63,16 @@ suite('oculus-touch-controls', function () {
 
       component.checkIfControllerPresent();
 
-      assert.ok(injectTrackedControlsSpy.called, 'Inject');
-      assert.ok(addEventListenersSpy.called, 'Add');
-      assert.notOk(removeEventListenersSpy.called, 'Remove');
-      assert.ok(component.controllerPresent);
+      sinon.assert.calledOnce(injectTrackedControlsSpy);
+      sinon.assert.calledOnce(addEventListenersSpy);
+      sinon.assert.notCalled(removeEventListenersSpy);
+      assert.strictEqual(component.controllerPresent, true);
     });
 
     test('does not add/remove event listeners if presence does not change', function () {
-      var addEventListenersSpy = this.sinon.spy(component, 'addEventListeners');
-      var injectTrackedControlsSpy = this.sinon.spy(component, 'injectTrackedControls');
-      var removeEventListenersSpy = this.sinon.spy(component, 'removeEventListeners');
+      var addEventListenersSpy = sinon.spy(component, 'addEventListeners');
+      var injectTrackedControlsSpy = sinon.spy(component, 'injectTrackedControls');
+      var removeEventListenersSpy = sinon.spy(component, 'removeEventListeners');
 
       // Mock isControllerPresent to return true.
       el.sceneEl.systems['tracked-controls'].controllers = component.controllersWhenPresent;
@@ -83,15 +83,15 @@ suite('oculus-touch-controls', function () {
 
       component.checkIfControllerPresent();
 
-      assert.notOk(injectTrackedControlsSpy.called);
-      assert.notOk(addEventListenersSpy.called);
-      assert.notOk(removeEventListenersSpy.called);
-      assert.ok(component.controllerPresent);
+      sinon.assert.notCalled(injectTrackedControlsSpy);
+      sinon.assert.notCalled(addEventListenersSpy);
+      sinon.assert.notCalled(removeEventListenersSpy);
+      assert.strictEqual(component.controllerPresent, true);
     });
 
     test('removes event listeners if controller disappears', function () {
-      var addEventListenersSpy = this.sinon.spy(component, 'addEventListeners');
-      var injectTrackedControlsSpy = this.sinon.spy(component, 'injectTrackedControls');
+      var addEventListenersSpy = sinon.spy(component, 'addEventListeners');
+      var injectTrackedControlsSpy = sinon.spy(component, 'injectTrackedControls');
 
       // Mock that it's was currently present.
       component.controllerEventsActive = true;
@@ -99,9 +99,9 @@ suite('oculus-touch-controls', function () {
 
       component.checkIfControllerPresent();
 
-      assert.notOk(injectTrackedControlsSpy.called);
-      assert.notOk(addEventListenersSpy.called);
-      assert.notOk(component.controllerPresent);
+      sinon.assert.notCalled(injectTrackedControlsSpy);
+      sinon.assert.notCalled(addEventListenersSpy);
+      assert.strictEqual(component.controllerPresent, false);
     });
   });
 
@@ -110,15 +110,16 @@ suite('oculus-touch-controls', function () {
       el.sceneEl.systems['tracked-controls'].controllers = component.controllersWhenPresent;
       // Do the check.
       component.checkIfControllerPresent();
+      // Set up the event details.
+      const eventDetails = {axis: [0.1, 0.2], changed: [true, false]};
       // Install event handler listening for thumbstickmoved.
       this.el.addEventListener('thumbstickmoved', function (evt) {
-        assert.equal(evt.detail.x, 0.1);
-        assert.equal(evt.detail.y, 0.2);
-        assert.ok(evt.detail);
+        assert.equal(evt.detail.x, eventDetails.axis[0]);
+        assert.equal(evt.detail.y, eventDetails.axis[1]);
         done();
       });
       // Emit axismove.
-      this.el.emit('axismove', {axis: [0.1, 0.2], changed: [true, false]});
+      this.el.emit('axismove', eventDetails);
     });
 
     test('does not emit thumbstickmoved if axismove has no changes', function (done) {
@@ -127,7 +128,7 @@ suite('oculus-touch-controls', function () {
       component.checkIfControllerPresent();
       // Fail purposely.
       this.el.addEventListener('thumbstickmoved', function (evt) {
-        assert.notOk(evt.detail);
+        assert.fail('thumbstickmoved should not be called');
       });
       // Emit axismove with no changes.
       this.el.emit('axismove', {axis: [0.1, 0.2], changed: [false, false]});
@@ -140,13 +141,15 @@ suite('oculus-touch-controls', function () {
       el.sceneEl.systems['tracked-controls'].controllers = component.controllersWhenPresent;
       // Do the check.
       component.checkIfControllerPresent();
+      // Prepare the event details
+      const eventState = {value: 0.5, pressed: true, touched: true};
       // Install event handler listening for triggerchanged.
       el.addEventListener('triggerchanged', function (evt) {
-        assert.ok(evt.detail);
+        assert.deepEqual(evt.detail, eventState);
         done();
       });
       // Emit buttonchanged.
-      el.emit('buttonchanged', {id: 1, state: {value: 0.5, pressed: true, touched: true}});
+      el.emit('buttonchanged', {id: 1, state: eventState});
     });
   });
 });

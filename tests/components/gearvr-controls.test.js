@@ -1,4 +1,4 @@
-/* global assert, process, setup, suite, test */
+/* global assert, process, setup, sinon, suite, test */
 var entityFactory = require('../helpers').entityFactory;
 
 suite('gearvr-controls', function () {
@@ -27,8 +27,8 @@ suite('gearvr-controls', function () {
     test('returns not present if no controllers on first on first call', function () {
       var el = this.el;
       var component = el.components['gearvr-controls'];
-      var addEventListenersSpy = this.sinon.spy(component, 'addEventListeners');
-      var injectTrackedControlsSpy = this.sinon.spy(component, 'injectTrackedControls');
+      var addEventListenersSpy = sinon.spy(component, 'addEventListeners');
+      var injectTrackedControlsSpy = sinon.spy(component, 'injectTrackedControls');
 
       el.sceneEl.systems['tracked-controls'].controllers = [];
 
@@ -36,17 +36,17 @@ suite('gearvr-controls', function () {
 
       component.checkIfControllerPresent();
 
-      assert.notOk(injectTrackedControlsSpy.called);
-      assert.notOk(addEventListenersSpy.called);
-      assert.ok(component.controllerPresent === false);
+      sinon.assert.notCalled(injectTrackedControlsSpy);
+      sinon.assert.notCalled(addEventListenersSpy);
+      assert.strictEqual(component.controllerPresent, false);
     });
 
     test('does not remove event listeners if no controllers', function () {
       var el = this.el;
       var component = el.components['gearvr-controls'];
-      var addEventListenersSpy = this.sinon.spy(component, 'addEventListeners');
-      var injectTrackedControlsSpy = this.sinon.spy(component, 'injectTrackedControls');
-      var removeEventListenersSpy = this.sinon.spy(component, 'removeEventListeners');
+      var addEventListenersSpy = sinon.spy(component, 'addEventListeners');
+      var injectTrackedControlsSpy = sinon.spy(component, 'injectTrackedControls');
+      var removeEventListenersSpy = sinon.spy(component, 'removeEventListeners');
 
       el.sceneEl.systems['tracked-controls'].controllers = [];
 
@@ -55,18 +55,18 @@ suite('gearvr-controls', function () {
 
       component.checkIfControllerPresent();
 
-      assert.notOk(injectTrackedControlsSpy.called);
-      assert.notOk(addEventListenersSpy.called);
-      assert.notOk(removeEventListenersSpy.called);
-      assert.ok(component.controllerPresent === false);
+      sinon.assert.notCalled(injectTrackedControlsSpy);
+      sinon.assert.notCalled(addEventListenersSpy);
+      sinon.assert.notCalled(removeEventListenersSpy);
+      assert.strictEqual(component.controllerPresent, false);
     });
 
     test('attaches events if controller is newly present', function () {
       var el = this.el;
       var component = el.components['gearvr-controls'];
-      var addEventListenersSpy = this.sinon.spy(component, 'addEventListeners');
-      var injectTrackedControlsSpy = this.sinon.spy(component, 'injectTrackedControls');
-      var removeEventListenersSpy = this.sinon.spy(component, 'removeEventListeners');
+      var addEventListenersSpy = sinon.spy(component, 'addEventListeners');
+      var injectTrackedControlsSpy = sinon.spy(component, 'injectTrackedControls');
+      var removeEventListenersSpy = sinon.spy(component, 'removeEventListeners');
 
       el.sceneEl.systems['tracked-controls'].controllers = component.controllersWhenPresent;
 
@@ -74,18 +74,18 @@ suite('gearvr-controls', function () {
 
       component.checkIfControllerPresent();
 
-      assert.ok(injectTrackedControlsSpy.called);
-      assert.ok(addEventListenersSpy.called);
-      assert.notOk(removeEventListenersSpy.called);
-      assert.ok(component.controllerPresent);
+      sinon.assert.calledOnce(injectTrackedControlsSpy);
+      sinon.assert.calledOnce(addEventListenersSpy);
+      sinon.assert.notCalled(removeEventListenersSpy);
+      assert.strictEqual(component.controllerPresent, true);
     });
 
     test('does not inject/attach events again if controller already present', function () {
       var el = this.el;
       var component = el.components['gearvr-controls'];
-      var addEventListenersSpy = this.sinon.spy(component, 'addEventListeners');
-      var injectTrackedControlsSpy = this.sinon.spy(component, 'injectTrackedControls');
-      var removeEventListenersSpy = this.sinon.spy(component, 'removeEventListeners');
+      var addEventListenersSpy = sinon.spy(component, 'addEventListeners');
+      var injectTrackedControlsSpy = sinon.spy(component, 'injectTrackedControls');
+      var removeEventListenersSpy = sinon.spy(component, 'removeEventListeners');
 
       el.sceneEl.systems['tracked-controls'].controllers = component.controllersWhenPresent;
 
@@ -94,18 +94,18 @@ suite('gearvr-controls', function () {
 
       component.checkIfControllerPresent();
 
-      assert.notOk(injectTrackedControlsSpy.called);
-      assert.notOk(addEventListenersSpy.called);
-      assert.notOk(removeEventListenersSpy.called);
-      assert.ok(component.controllerPresent);
+      sinon.assert.notCalled(injectTrackedControlsSpy);
+      sinon.assert.notCalled(addEventListenersSpy);
+      sinon.assert.notCalled(removeEventListenersSpy);
+      assert.strictEqual(component.controllerPresent, true);
     });
 
     test('removes event listeners if controller disappears', function () {
       var el = this.el;
       var component = el.components['gearvr-controls'];
-      var addEventListenersSpy = this.sinon.spy(component, 'addEventListeners');
-      var injectTrackedControlsSpy = this.sinon.spy(component, 'injectTrackedControls');
-      var removeEventListenersSpy = this.sinon.spy(component, 'removeEventListeners');
+      var addEventListenersSpy = sinon.spy(component, 'addEventListeners');
+      var injectTrackedControlsSpy = sinon.spy(component, 'injectTrackedControls');
+      var removeEventListenersSpy = sinon.spy(component, 'removeEventListeners');
 
       el.sceneEl.systems['tracked-controls'].controllers = [];
 
@@ -114,10 +114,10 @@ suite('gearvr-controls', function () {
 
       component.checkIfControllerPresent();
 
-      assert.notOk(injectTrackedControlsSpy.called);
-      assert.notOk(addEventListenersSpy.called);
-      assert.ok(removeEventListenersSpy.called);
-      assert.notOk(component.controllerPresent);
+      sinon.assert.notCalled(injectTrackedControlsSpy);
+      sinon.assert.notCalled(addEventListenersSpy);
+      sinon.assert.calledOnce(removeEventListenersSpy);
+      assert.strictEqual(component.controllerPresent, false);
     });
   });
 
@@ -130,14 +130,16 @@ suite('gearvr-controls', function () {
 
       component.checkIfControllerPresent();
 
+      // Configure the event state for which we'll use the axis state for verification.
+      const eventState = {axis: [0.1, 0.2], changed: [true, false]};
+
       el.addEventListener('trackpadmoved', function (evt) {
-        assert.equal(evt.detail.x, 0.1);
-        assert.equal(evt.detail.y, 0.2);
-        assert.ok(evt.detail);
+        assert.equal(evt.detail.x, eventState.axis[0]);
+        assert.equal(evt.detail.y, eventState.axis[1]);
         done();
       });
 
-      el.emit('axismove', {axis: [0.1, 0.2], changed: [true, false]});
+      el.emit('axismove', eventState);
     });
 
     test('does not emit trackpadmoved on axismove with no changes', function (done) {
@@ -149,8 +151,8 @@ suite('gearvr-controls', function () {
       component.checkIfControllerPresent();
 
       // Fail purposely.
-      el.addEventListener('thumbstickmoved', function (evt) {
-        assert.ok(false);
+      el.addEventListener('trackpadmoved', function (evt) {
+        assert.fail('trackpadmoved was called when there was no change.');
       });
 
       el.emit('axismove', {axis: [0.1, 0.2], changed: [false, false]});
@@ -159,36 +161,57 @@ suite('gearvr-controls', function () {
   });
 
   suite('buttonchanged', function () {
-    test('if we get buttonchanged, emit trackpadchanged', function (done) {
-      var el = this.el;
-      var component = el.components['gearvr-controls'];
+    [ { button: 'trackpad', id: 0 },
+      { button: 'trigger', id: 1 }
+    ].forEach(function (buttonDescription) {
+      test('if we get buttonchanged for button ' + buttonDescription.id + ', emit ' + buttonDescription.button + 'changed', function (done) {
+        var el = this.el;
+        var component = el.components['gearvr-controls'];
 
-      el.sceneEl.systems['tracked-controls'].controllers = component.controllersWhenPresent;
+        el.sceneEl.systems['tracked-controls'].controllers = component.controllersWhenPresent;
 
-      component.checkIfControllerPresent();
+        component.checkIfControllerPresent();
 
-      el.addEventListener('trackpadchanged', function (evt) {
-        assert.ok(evt.detail);
-        done();
+        // Configure the expected event state and use it to fire the event.
+        const eventState = {value: 0.5, pressed: true, touched: true};
+
+        el.addEventListener(buttonDescription.button + 'changed', function (evt) {
+          assert.deepEqual(evt.detail, eventState);
+          done();
+        });
+
+        el.emit('buttonchanged', {id: buttonDescription.id, state: eventState});
       });
 
-      el.emit('buttonchanged', {id: 0, state: {value: 0.5, pressed: true, touched: true}});
-    });
+      test('if we get buttondown for button ' + buttonDescription.id + ', emit ' + buttonDescription.button + 'down', function (done) {
+        var el = this.el;
+        var component = el.components['gearvr-controls'];
 
-    test('if we get buttonchanged, emit triggerchanged', function (done) {
-      var el = this.el;
-      var component = el.components['gearvr-controls'];
+        el.sceneEl.systems['tracked-controls'].controllers = component.controllersWhenPresent;
 
-      el.sceneEl.systems['tracked-controls'].controllers = component.controllersWhenPresent;
+        component.checkIfControllerPresent();
 
-      component.checkIfControllerPresent();
+        el.addEventListener(buttonDescription.button + 'down', function (evt) {
+          done();
+        });
 
-      el.addEventListener('triggerchanged', function (evt) {
-        assert.ok(evt.detail);
-        done();
+        el.emit('buttondown', {id: buttonDescription.id});
       });
 
-      el.emit('buttonchanged', {id: 1, state: {value: 0.5, pressed: true, touched: true}});
+      test('if we get buttonup for button ' + buttonDescription.id + ', emit ' + buttonDescription.button + 'up', function (done) {
+        var el = this.el;
+        var component = el.components['gearvr-controls'];
+
+        el.sceneEl.systems['tracked-controls'].controllers = component.controllersWhenPresent;
+
+        component.checkIfControllerPresent();
+
+        el.addEventListener(buttonDescription.button + 'up', function (evt) {
+          done();
+        });
+
+        el.emit('buttonup', {id: buttonDescription.id});
+      });
     });
   });
 
@@ -204,9 +227,16 @@ suite('gearvr-controls', function () {
       el.setAttribute('gearvr-controls', 'armModel', false);
       makePresent(el);
       var trackedControls = el.components['tracked-controls'];
-      var applyArmModelSpy = this.sinon.spy(trackedControls, 'applyArmModel');
+      var applyArmModelSpy = sinon.spy(trackedControls, 'applyArmModel');
       trackedControls.tick();
-      assert.notOk(applyArmModelSpy.called);
+
+      // Verify that the function which applies arm model is not called when disabled.
+      sinon.assert.notCalled(applyArmModelSpy);
+
+      // Additionally verify that no other offets have been applied.
+      assert.strictEqual(el.object3D.position.x, 0);
+      assert.strictEqual(el.object3D.position.y, 0);
+      assert.strictEqual(el.object3D.position.z, 0);
     });
 
     test('applies armModel if armModel enabled', function () {
@@ -214,9 +244,31 @@ suite('gearvr-controls', function () {
       el.setAttribute('gearvr-controls', 'armModel', true);
       makePresent(el);
       var trackedControls = el.components['tracked-controls'];
-      var applyArmModelSpy = this.sinon.spy(trackedControls, 'applyArmModel');
+      var applyArmModelSpy = sinon.spy(trackedControls, 'applyArmModel');
       trackedControls.tick();
-      assert.ok(applyArmModelSpy.called);
+
+      // Verify that the function which applies arm model is called.
+      sinon.assert.calledOnce(applyArmModelSpy);
+    });
+
+    test('verifies armModel position is applied for the right hand', function () {
+      var el = this.el;
+      el.setAttribute('gearvr-controls', 'armModel', true);
+      makePresent(el);
+      var trackedControls = el.components['tracked-controls'];
+      trackedControls.tick();
+      assert.ok(el.object3D.position.x > 0);
+    });
+
+    test('verifies armModel position is applied for the left hand', function () {
+      var el = this.el;
+      el.setAttribute('gearvr-controls', 'armModel', true);
+      el.setAttribute('gearvr-controls', 'hand', 'left');
+      el.components['gearvr-controls'].controllersWhenPresent[0].hand = 'left';
+      makePresent(el);
+      var trackedControls = el.components['tracked-controls'];
+      trackedControls.tick();
+      assert.ok(el.object3D.position.x < 0);
     });
   });
 });

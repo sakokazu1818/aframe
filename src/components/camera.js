@@ -22,6 +22,8 @@ module.exports.Component = registerComponent('camera', {
   init: function () {
     var camera;
     var el = this.el;
+    var sceneEl = el.sceneEl;
+    this.canvas = sceneEl.canvas;
 
     // Create camera.
     camera = this.camera = new THREE.PerspectiveCamera();
@@ -34,9 +36,11 @@ module.exports.Component = registerComponent('camera', {
   update: function (oldData) {
     var data = this.data;
     var camera = this.camera;
+    var embedded = this.el.sceneEl.getAttribute('embedded') && !this.el.sceneEl.is('vr-mode');
+    var embeddedAR = this.canvas.parentElement.offsetWidth / this.canvas.parentElement.offsetHeight;
 
     // Update properties.
-    camera.aspect = data.aspect || (window.innerWidth / window.innerHeight);
+    camera.aspect = embedded ? embeddedAR : (window.innerWidth / window.innerHeight);
     camera.far = data.far;
     camera.fov = data.fov;
     camera.near = data.near;
