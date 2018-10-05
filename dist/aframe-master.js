@@ -63385,6 +63385,13 @@ module.exports.Component = registerComponent('camera', {
     camera.fov = data.fov;
     camera.near = data.near;
     camera.zoom = data.zoom;
+    console.log({
+      camera: camera,
+      offsetWidth: this.canvas.parentElement.offsetWidth,
+      offsetHeight: this.canvas.parentElement.offsetHeight,
+      innerWidth: window.innerWidth,
+      innerHeight: window.innerHeight
+    });
     camera.updateProjectionMatrix();
 
     this.updateActiveCamera(oldData);
@@ -75691,7 +75698,7 @@ _dereq_('./core/a-mixin');
 _dereq_('./extras/components/');
 _dereq_('./extras/primitives/');
 
-console.log('A-Frame Version: 0.8.2 (Date 2018-10-05, Commit #762b01d3)');
+console.log('A-Frame Version: 0.8.2 (Date 2018-10-05, Commit #3f7254a1)');
 console.log('three Version:', pkg.dependencies['three']);
 console.log('WebVR Polyfill Version:', pkg.dependencies['webvr-polyfill']);
 

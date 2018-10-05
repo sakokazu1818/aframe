@@ -48,6 +48,13 @@ module.exports.Component = registerComponent('camera', {
     camera.fov = data.fov;
     camera.near = data.near;
     camera.zoom = data.zoom;
+    console.log({
+      camera: camera,
+      offsetWidth: this.canvas.parentElement.offsetWidth,
+      offsetHeight: this.canvas.parentElement.offsetHeight,
+      innerWidth: window.innerWidth,
+      innerHeight: window.innerHeight
+    });
     camera.updateProjectionMatrix();
 
     this.updateActiveCamera(oldData);
