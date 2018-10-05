@@ -63365,8 +63365,6 @@ module.exports.Component = registerComponent('camera', {
     // Create camera.
     camera = this.camera = new THREE.PerspectiveCamera();
     el.setObject3D('camera', camera);
-
-    console.log('camera ocmponent, object', this);
   },
 
   /**
@@ -63380,20 +63378,10 @@ module.exports.Component = registerComponent('camera', {
 
     // Update properties.
     camera.aspect = embedded ? embeddedAR : (window.innerWidth / window.innerHeight);
-    console.log('camera.aspect', camera.aspect);
     camera.far = data.far;
     camera.fov = data.fov;
     camera.near = data.near;
     camera.zoom = data.zoom;
-    console.log({
-      embeddedAR: embeddedAR,
-      embedded: embedded,
-      camera: camera,
-      offsetWidth: this.canvas.parentElement.offsetWidth,
-      offsetHeight: this.canvas.parentElement.offsetHeight,
-      innerWidth: window.innerWidth,
-      innerHeight: window.innerHeight
-    });
     camera.updateProjectionMatrix();
 
     this.updateActiveCamera(oldData);
@@ -73910,14 +73898,6 @@ module.exports.AScene = registerElement('a-scene', {
  * @param {boolean} embedded - Is the scene embedded?
  */
 function getCanvasSize (canvasEl, embedded) {
-  console.log({
-    offsetHeight: canvasEl.parentElement.offsetHeight,
-    offsetWidth: canvasEl.parentElement.offsetWidth,
-    windowInnerHeight: window.innerHeight,
-    windowInnerWidth: window.innerWidth,
-    documentOffsetHeight: document.body.offsetHeight,
-    documentOffsetWidth: document.body.offsetWidth
-  });
   if (embedded) {
     return {
       height: canvasEl.parentElement.offsetHeight,
@@ -75700,7 +75680,7 @@ _dereq_('./core/a-mixin');
 _dereq_('./extras/components/');
 _dereq_('./extras/primitives/');
 
-console.log('A-Frame Version: 0.8.2 (Date 2018-10-05, Commit #3a48a86d)');
+console.log('A-Frame Version: 0.8.2 (Date 2018-10-05, Commit #89db6d1a)');
 console.log('three Version:', pkg.dependencies['three']);
 console.log('WebVR Polyfill Version:', pkg.dependencies['webvr-polyfill']);
 

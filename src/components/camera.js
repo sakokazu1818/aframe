@@ -28,8 +28,6 @@ module.exports.Component = registerComponent('camera', {
     // Create camera.
     camera = this.camera = new THREE.PerspectiveCamera();
     el.setObject3D('camera', camera);
-
-    console.log('camera ocmponent, object', this);
   },
 
   /**
@@ -43,20 +41,10 @@ module.exports.Component = registerComponent('camera', {
 
     // Update properties.
     camera.aspect = embedded ? embeddedAR : (window.innerWidth / window.innerHeight);
-    console.log('camera.aspect', camera.aspect);
     camera.far = data.far;
     camera.fov = data.fov;
     camera.near = data.near;
     camera.zoom = data.zoom;
-    console.log({
-      embeddedAR: embeddedAR,
-      embedded: embedded,
-      camera: camera,
-      offsetWidth: this.canvas.parentElement.offsetWidth,
-      offsetHeight: this.canvas.parentElement.offsetHeight,
-      innerWidth: window.innerWidth,
-      innerHeight: window.innerHeight
-    });
     camera.updateProjectionMatrix();
 
     this.updateActiveCamera(oldData);
