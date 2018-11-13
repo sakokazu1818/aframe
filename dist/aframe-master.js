@@ -76009,7 +76009,7 @@ module.exports.AScene = registerElement('a-scene', {
 
         if (this.isPlaying) { this.tick(this.time, this.delta); }
 
-        renderer.animate(this.render);
+        renderer.setAnimationLoop(this.render);
         renderer.render(this.object3D, this.camera, this.renderTarget);
       },
       writable: true
@@ -77808,7 +77808,7 @@ _dereq_('./core/a-mixin');
 _dereq_('./extras/components/');
 _dereq_('./extras/primitives/');
 
-console.log('A-Frame Version: 0.8.2 (Date 2018-11-09, Commit #8638997e)');
+console.log('A-Frame Version: 0.8.2 (Date 2018-11-13, Commit #f0342133)');
 console.log('three Version:', pkg.dependencies['three']);
 console.log('WebVR Polyfill Version:', pkg.dependencies['webvr-polyfill']);
 
